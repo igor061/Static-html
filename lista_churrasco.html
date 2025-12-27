@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Checklist do Churrasco</title>
+  <title>Checklist do Churrasco (por grupos)</title>
   <style>
     :root { color-scheme: light dark; }
     body {
@@ -12,33 +12,17 @@
       background: #0b0c10;
       color: #e9eef6;
     }
-    .app {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 16px 14px 32px;
-    }
+    .app { max-width: 820px; margin: 0 auto; padding: 16px 14px 32px; }
     header {
-      position: sticky;
-      top: 0;
+      position: sticky; top: 0; z-index: 10;
       background: linear-gradient(#0b0c10 70%, rgba(11,12,16,0));
       padding: 10px 0 12px;
-      z-index: 5;
       backdrop-filter: blur(6px);
     }
-    h1 {
-      margin: 6px 0 10px;
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: .2px;
-    }
+    h1 { margin: 6px 0 10px; font-size: 20px; font-weight: 800; letter-spacing: .2px; }
     .muted { color: #aab6c7; font-size: 12px; line-height: 1.35; }
-    .row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    input[type="text"] {
-      flex: 1;
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    input[type="text"], select {
       padding: 12px 12px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,.10);
@@ -47,34 +31,50 @@
       outline: none;
       font-size: 16px;
     }
+    input[type="text"] { flex: 1; min-width: 180px; }
+    select { font-size: 14px; }
     button {
       padding: 12px 14px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.10);
       color: inherit;
-      font-weight: 700;
+      font-weight: 800;
       font-size: 14px;
       cursor: pointer;
       touch-action: manipulation;
     }
     button:active { transform: scale(.98); }
     .pill {
-      display: inline-flex;
-      gap: 8px;
-      align-items: center;
-      padding: 8px 10px;
-      border-radius: 999px;
+      display: inline-flex; gap: 8px; align-items: center;
+      padding: 8px 10px; border-radius: 999px;
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.06);
-      font-size: 12px;
-      color: #cfe1ff;
+      font-size: 12px; color: #cfe1ff;
     }
-    .list { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+    .groups { margin-top: 14px; display: flex; flex-direction: column; gap: 14px; }
+    details {
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      border-radius: 18px;
+      overflow: clip;
+    }
+    summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 12px 12px;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      user-select: none;
+    }
+    summary::-webkit-details-marker { display:none; }
+    .gTitle { font-weight: 900; font-size: 15px; }
+    .gMeta { display:flex; gap:8px; align-items:center; }
+    .gCount { font-size: 12px; color: #aab6c7; }
+
+    .list { padding: 10px 10px 12px; display: flex; flex-direction: column; gap: 10px; }
     .item {
-      display: flex;
-      gap: 10px;
-      align-items: center;
+      display: flex; gap: 10px; align-items: center;
       padding: 12px 12px;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,.10);
@@ -82,13 +82,10 @@
     }
     .item.checked { opacity: .78; }
     .item .text {
-      flex: 1;
-      font-size: 16px;
-      line-height: 1.2;
-      word-break: break-word;
+      flex: 1; font-size: 16px; line-height: 1.2; word-break: break-word;
     }
     .item.checked .text { text-decoration: line-through; color: #b7c1d1; }
-    .actions { display: flex; gap: 8px; }
+    .actions { display: flex; gap: 8px; align-items:center; }
     .iconBtn {
       padding: 10px 10px;
       border-radius: 12px;
@@ -100,23 +97,19 @@
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.08);
     }
-    .chk {
-      width: 24px;
-      height: 24px;
-      accent-color: #6ea8fe;
-      transform: translateY(1px);
-      cursor: pointer;
-    }
+    .danger { border-color: rgba(255,80,80,.35); background: rgba(255,80,80,.12); }
+    .moveBtn { font-size: 14px; min-width: 40px; padding: 10px 8px; }
+
+    .chk { width: 24px; height: 24px; accent-color: #6ea8fe; transform: translateY(1px); cursor: pointer; }
+
     .footer {
       margin-top: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; flex-wrap: wrap;
     }
+
     dialog {
-      width: min(520px, calc(100% - 24px));
+      width: min(560px, calc(100% - 24px));
       border: 1px solid rgba(255,255,255,.14);
       border-radius: 16px;
       padding: 14px;
@@ -124,9 +117,11 @@
       color: #e9eef6;
     }
     dialog::backdrop { background: rgba(0,0,0,.55); }
-    .dlgTitle { font-weight: 800; margin: 2px 0 10px; }
-    .dlgBtns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; }
-    .danger { border-color: rgba(255,80,80,.35); background: rgba(255,80,80,.12); }
+    .dlgTitle { font-weight: 900; margin: 2px 0 10px; }
+    .dlgBtns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+    .dlgRow { display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
+    .dlgRow label { font-size: 12px; color:#aab6c7; }
+    .small { font-size: 12px; color:#aab6c7; }
   </style>
 </head>
 <body>
@@ -134,14 +129,17 @@
     <header>
       <h1>Checklist do Churrasco</h1>
       <div class="muted">
-        Salva em <b>cookies</b> (no próprio navegador). Ao marcar, o item vai pro final.
-        <br/>Obs.: cookies têm limite de tamanho; se sua lista ficar gigante pode não caber.
+        ✅ Salva em <b>cookies</b>. <b>Marcou</b>? o item vai pro <b>final do grupo</b>. <br/>
+        ↕️ Para mudar a ordem manualmente, use <b>↑ / ↓</b> no item.
       </div>
+
       <div style="height:10px"></div>
       <div class="row">
         <input id="newItem" type="text" placeholder="Adicionar item (ex: carvão, gelo, picanha...)" />
+        <select id="newGroup"></select>
         <button id="addBtn">Adicionar</button>
       </div>
+
       <div style="height:10px"></div>
       <div class="row">
         <span class="pill" id="statsPill">0 itens</span>
@@ -149,26 +147,52 @@
       </div>
     </header>
 
-    <main class="list" id="list"></main>
+    <main class="groups" id="groups"></main>
 
     <div class="footer">
-      <span class="muted">Dica: toque no texto pra editar.</span>
+      <span class="muted">Dica: toque no texto ou ✏️ para editar (inclusive trocar de grupo).</span>
       <button class="danger" id="clearCheckedBtn" title="Remove apenas os itens marcados">Excluir marcados</button>
     </div>
   </div>
 
   <dialog id="editDialog">
     <div class="dlgTitle" id="dlgTitle">Editar item</div>
-    <input id="editInput" type="text" />
+
+    <div class="dlgRow">
+      <label style="width:100%">Texto</label>
+      <input id="editInput" type="text" style="width:100%" />
+    </div>
+
+    <div style="height:10px"></div>
+
+    <div class="dlgRow">
+      <div style="flex:1; min-width: 200px;">
+        <label>Grupo</label><br/>
+        <select id="editGroup" style="width:100%"></select>
+      </div>
+      <div style="flex:1; min-width: 200px;">
+        <label>Status</label><br/>
+        <select id="editChecked" style="width:100%">
+          <option value="0">Não marcado</option>
+          <option value="1">Marcado</option>
+        </select>
+      </div>
+    </div>
+
     <div class="dlgBtns">
       <button id="dlgCancel">Cancelar</button>
+      <button class="danger" id="dlgDelete">Excluir</button>
       <button id="dlgSave">Salvar</button>
+    </div>
+
+    <div class="small" style="margin-top:10px;">
+      Se você marcar aqui, o item vai pro final do grupo.
     </div>
   </dialog>
 
   <script>
-    // ============ Cookies ============
-    const COOKIE_NAME = "bbq_checklist_v1";
+    // ================= Cookies =================
+    const COOKIE_NAME = "bbq_checklist_groups_v2";
     const COOKIE_DAYS = 365;
 
     function setCookie(name, value, days) {
@@ -178,7 +202,6 @@
         "; expires=" + expires +
         "; path=/; SameSite=Lax";
     }
-
     function getCookie(name) {
       const cookies = document.cookie ? document.cookie.split("; ") : [];
       for (const c of cookies) {
@@ -188,12 +211,14 @@
       return null;
     }
 
-    // ============ App State ============
-    /** @type {{id:string,text:string,checked:boolean,createdAt:number}[]} */
-    let items = [];
+    // ================= State =================
+    // Estrutura v2:
+    // data = { groups: [{id,name,order,open}], items: [{id,text,groupId,checked,order,createdAt}] }
+    let data = { groups: [], items: [] };
 
-    const $list = document.getElementById("list");
+    const $groups = document.getElementById("groups");
     const $newItem = document.getElementById("newItem");
+    const $newGroup = document.getElementById("newGroup");
     const $addBtn = document.getElementById("addBtn");
     const $statsPill = document.getElementById("statsPill");
     const $saveStatus = document.getElementById("saveStatus");
@@ -201,8 +226,11 @@
 
     const $editDialog = document.getElementById("editDialog");
     const $editInput = document.getElementById("editInput");
+    const $editGroup = document.getElementById("editGroup");
+    const $editChecked = document.getElementById("editChecked");
     const $dlgCancel = document.getElementById("dlgCancel");
     const $dlgSave = document.getElementById("dlgSave");
+    const $dlgDelete = document.getElementById("dlgDelete");
     const $dlgTitle = document.getElementById("dlgTitle");
 
     let editingId = null;
@@ -211,42 +239,9 @@
       return (crypto?.randomUUID?.() || ("id_" + Math.random().toString(16).slice(2) + Date.now().toString(16)));
     }
 
-    function seedIfEmpty() {
-      if (items.length) return;
-      const defaults = [
-        "Carvão", "Acendedor / isqueiro", "Sal grosso", "Gelo", "Água",
-        "Picanha / fraldinha", "Linguiça", "Pão de alho", "Queijo coalho",
-        "Arroz", "Farofa", "Vinagrete", "Pratos e copos", "Guardanapo", "Sacos de lixo"
-      ];
-      items = defaults.map((t, i) => ({
-        id: uuid(),
-        text: t,
-        checked: false,
-        createdAt: Date.now() + i
-      }));
-      persist();
-    }
-
-    function load() {
-      const raw = getCookie(COOKIE_NAME);
-      if (!raw) { items = []; seedIfEmpty(); render(); return; }
-
-      try {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) items = parsed;
-        else items = [];
-      } catch {
-        items = [];
-      }
-      seedIfEmpty();
-      normalizeOrder();
-      render();
-    }
-
     function persist() {
       try {
-        const json = JSON.stringify(items);
-        setCookie(COOKIE_NAME, json, COOKIE_DAYS);
+        setCookie(COOKIE_NAME, JSON.stringify(data), COOKIE_DAYS);
         $saveStatus.textContent = "salvo";
         setTimeout(() => ($saveStatus.textContent = ""), 900);
       } catch (e) {
@@ -254,104 +249,156 @@
       }
     }
 
-    // Regra: desmarcados primeiro, marcados no final (e dentro de cada grupo preserva a ordem criada)
-    function normalizeOrder() {
-      const unchecked = items.filter(i => !i.checked).sort((a,b) => a.createdAt - b.createdAt);
-      const checked = items.filter(i => i.checked).sort((a,b) => a.createdAt - b.createdAt);
-      items = [...unchecked, ...checked];
+    function sortGroups() {
+      data.groups.sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
     }
 
-    function updateStats() {
-      const total = items.length;
-      const done = items.filter(i => i.checked).length;
-      $statsPill.textContent = `${done}/${total} marcados`;
+    function itemsInGroup(groupId) {
+      // Regra: NÃO marcados primeiro, depois marcados, mantendo order dentro de cada seção.
+      const inG = data.items.filter(i => i.groupId === groupId);
+      const a = inG.filter(i => !i.checked).sort((x,y) => (x.order ?? 0) - (y.order ?? 0));
+      const b = inG.filter(i => i.checked).sort((x,y) => (x.order ?? 0) - (y.order ?? 0));
+      return [...a, ...b];
     }
 
-    function render() {
-      normalizeOrder();
-      $list.innerHTML = "";
-      for (const item of items) {
-        const row = document.createElement("div");
-        row.className = "item" + (item.checked ? " checked" : "");
+    function maxOrderInGroup(groupId) {
+      const arr = data.items.filter(i => i.groupId === groupId);
+      if (!arr.length) return 0;
+      return Math.max(...arr.map(i => i.order ?? 0));
+    }
 
-        const chk = document.createElement("input");
-        chk.type = "checkbox";
-        chk.className = "chk";
-        chk.checked = item.checked;
-        chk.addEventListener("change", () => {
-          item.checked = chk.checked;
-          persist();
-          render(); // ao marcar, vai pro final por normalizeOrder()
-        });
+    function normalizeOrders(groupId) {
+      // Reatribui orders sequenciais para deixar consistente após exclusões/moves.
+      const list = itemsInGroup(groupId);
+      list.forEach((it, idx) => it.order = (idx + 1) * 10);
+    }
 
-        const text = document.createElement("div");
-        text.className = "text";
-        text.textContent = item.text;
-        text.title = "Toque para editar";
-        text.addEventListener("click", () => openEdit(item.id));
+    function moveItemWithinGroup(id, direction) {
+      const item = data.items.find(i => i.id === id);
+      if (!item) return;
 
-        const actions = document.createElement("div");
-        actions.className = "actions";
+      const groupId = item.groupId;
+      const list = itemsInGroup(groupId);
 
-        const editBtn = document.createElement("button");
-        editBtn.className = "iconBtn";
-        editBtn.textContent = "✏️";
-        editBtn.title = "Editar";
-        editBtn.addEventListener("click", () => openEdit(item.id));
+      const idx = list.findIndex(i => i.id === id);
+      if (idx < 0) return;
 
-        const delBtn = document.createElement("button");
-        delBtn.className = "iconBtn danger";
-        delBtn.textContent = "🗑️";
-        delBtn.title = "Excluir";
-        delBtn.addEventListener("click", () => removeItem(item.id));
+      const targetIdx = idx + direction;
+      if (targetIdx < 0 || targetIdx >= list.length) return;
 
-        actions.appendChild(editBtn);
-        actions.appendChild(delBtn);
+      // Troca "order" com o vizinho na lista visual
+      const other = list[targetIdx];
+      const tmp = item.order;
+      item.order = other.order;
+      other.order = tmp;
 
-        row.appendChild(chk);
-        row.appendChild(text);
-        row.appendChild(actions);
-
-        $list.appendChild(row);
+      // Mantém regra: se está marcado, ainda ficará na seção de marcados (porque checked separa)
+      // Então, mover ↑/↓ só faz sentido dentro da mesma seção; se tentar atravessar a fronteira,
+      // a UI visual impede na prática (mas como a lista é concatenada, pode trocar com um item
+      // de outra seção). Vamos evitar isso:
+      const sameSection = (item.checked === other.checked);
+      if (!sameSection) {
+        // desfaz e sai
+        other.order = item.order;
+        item.order = tmp;
+        return;
       }
-      updateStats();
+
+      persist();
+      render();
     }
 
-    function addItem(text) {
+    function toggleChecked(id, checked) {
+      const item = data.items.find(i => i.id === id);
+      if (!item) return;
+
+      item.checked = !!checked;
+
+      // Ao marcar, manda pro final do grupo:
+      item.order = maxOrderInGroup(item.groupId) + 10;
+
+      normalizeOrders(item.groupId);
+      persist();
+      render();
+    }
+
+    function addItem(text, groupId) {
       const t = (text || "").trim();
       if (!t) return;
 
-      items.push({ id: uuid(), text: t, checked: false, createdAt: Date.now() });
+      const gid = groupId || (data.groups[0]?.id);
+      const ord = maxOrderInGroup(gid) + 10;
+
+      data.items.push({
+        id: uuid(),
+        text: t,
+        groupId: gid,
+        checked: false,
+        order: ord,
+        createdAt: Date.now()
+      });
+
+      normalizeOrders(gid);
       $newItem.value = "";
       persist();
       render();
     }
 
     function removeItem(id) {
-      items = items.filter(i => i.id !== id);
+      const item = data.items.find(i => i.id === id);
+      data.items = data.items.filter(i => i.id !== id);
+      if (item) normalizeOrders(item.groupId);
       persist();
       render();
     }
 
     function openEdit(id) {
-      const item = items.find(i => i.id === id);
+      const item = data.items.find(i => i.id === id);
       if (!item) return;
 
       editingId = id;
       $dlgTitle.textContent = "Editar item";
       $editInput.value = item.text;
+
+      // popula selects
+      fillGroupSelect($editGroup, item.groupId);
+      $editChecked.value = item.checked ? "1" : "0";
+
       $editDialog.showModal();
       setTimeout(() => $editInput.focus(), 50);
     }
 
     function saveEdit() {
       if (!editingId) return;
-      const item = items.find(i => i.id === editingId);
+      const item = data.items.find(i => i.id === editingId);
       if (!item) return;
 
-      const t = ($editInput.value || "").trim();
-      if (!t) return; // não deixa salvar vazio
-      item.text = t;
+      const newText = ($editInput.value || "").trim();
+      if (!newText) return;
+
+      const oldGroup = item.groupId;
+      const newGroupId = $editGroup.value;
+
+      item.text = newText;
+
+      const newChecked = ($editChecked.value === "1");
+      const changedChecked = (newChecked !== item.checked);
+
+      // Se mudou de grupo:
+      if (newGroupId !== oldGroup) {
+        item.groupId = newGroupId;
+        item.order = maxOrderInGroup(newGroupId) + 10; // vai pro fim do novo grupo
+        normalizeOrders(oldGroup);
+        normalizeOrders(newGroupId);
+      }
+
+      if (changedChecked) {
+        item.checked = newChecked;
+        // se marcou, manda pro final do grupo
+        item.order = maxOrderInGroup(item.groupId) + 10;
+        normalizeOrders(item.groupId);
+      }
+
       editingId = null;
       $editDialog.close();
       persist();
@@ -359,23 +406,270 @@
     }
 
     function clearChecked() {
-      items = items.filter(i => !i.checked);
+      const checkedItems = data.items.filter(i => i.checked);
+      const affectedGroups = [...new Set(checkedItems.map(i => i.groupId))];
+      data.items = data.items.filter(i => !i.checked);
+      affectedGroups.forEach(normalizeOrders);
       persist();
       render();
     }
 
-    // ============ Events ============
-    $addBtn.addEventListener("click", () => addItem($newItem.value));
+    function updateStats() {
+      const total = data.items.length;
+      const done = data.items.filter(i => i.checked).length;
+      $statsPill.textContent = `${done}/${total} marcados`;
+    }
+
+    function fillGroupSelect(selectEl, selectedId) {
+      selectEl.innerHTML = "";
+      sortGroups();
+      for (const g of data.groups) {
+        const opt = document.createElement("option");
+        opt.value = g.id;
+        opt.textContent = g.name;
+        if (g.id === selectedId) opt.selected = true;
+        selectEl.appendChild(opt);
+      }
+    }
+
+    function renderNewGroupSelect() {
+      fillGroupSelect($newGroup, $newGroup.value || data.groups[0]?.id);
+    }
+
+    function render() {
+      sortGroups();
+      renderNewGroupSelect();
+
+      $groups.innerHTML = "";
+
+      for (const g of data.groups) {
+        const groupItems = itemsInGroup(g.id);
+        const done = groupItems.filter(i => i.checked).length;
+        const total = groupItems.length;
+
+        const details = document.createElement("details");
+        details.open = (g.open ?? true);
+        details.addEventListener("toggle", () => { g.open = details.open; persist(); });
+
+        const summary = document.createElement("summary");
+        const left = document.createElement("div");
+        left.className = "gTitle";
+        left.textContent = g.name;
+
+        const right = document.createElement("div");
+        right.className = "gMeta";
+        const cnt = document.createElement("div");
+        cnt.className = "gCount";
+        cnt.textContent = `${done}/${total} marcados`;
+        right.appendChild(cnt);
+
+        summary.appendChild(left);
+        summary.appendChild(right);
+
+        const list = document.createElement("div");
+        list.className = "list";
+
+        if (!groupItems.length) {
+          const empty = document.createElement("div");
+          empty.className = "muted";
+          empty.style.padding = "6px 2px 10px";
+          empty.textContent = "Sem itens neste grupo.";
+          list.appendChild(empty);
+        }
+
+        for (const item of groupItems) {
+          const row = document.createElement("div");
+          row.className = "item" + (item.checked ? " checked" : "");
+
+          const chk = document.createElement("input");
+          chk.type = "checkbox";
+          chk.className = "chk";
+          chk.checked = item.checked;
+          chk.addEventListener("change", () => toggleChecked(item.id, chk.checked));
+
+          const text = document.createElement("div");
+          text.className = "text";
+          text.textContent = item.text;
+          text.title = "Toque para editar";
+          text.addEventListener("click", () => openEdit(item.id));
+
+          const actions = document.createElement("div");
+          actions.className = "actions";
+
+          // mover ordem: só permite dentro da mesma seção (marcados com marcados, não marcados com não marcados)
+          const upBtn = document.createElement("button");
+          upBtn.className = "iconBtn moveBtn";
+          upBtn.textContent = "↑";
+          upBtn.title = "Subir";
+          upBtn.addEventListener("click", () => moveItemWithinGroup(item.id, -1));
+
+          const downBtn = document.createElement("button");
+          downBtn.className = "iconBtn moveBtn";
+          downBtn.textContent = "↓";
+          downBtn.title = "Descer";
+          downBtn.addEventListener("click", () => moveItemWithinGroup(item.id, +1));
+
+          const editBtn = document.createElement("button");
+          editBtn.className = "iconBtn";
+          editBtn.textContent = "✏️";
+          editBtn.title = "Editar";
+          editBtn.addEventListener("click", () => openEdit(item.id));
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "iconBtn danger";
+          delBtn.textContent = "🗑️";
+          delBtn.title = "Excluir";
+          delBtn.addEventListener("click", () => removeItem(item.id));
+
+          actions.appendChild(upBtn);
+          actions.appendChild(downBtn);
+          actions.appendChild(editBtn);
+          actions.appendChild(delBtn);
+
+          row.appendChild(chk);
+          row.appendChild(text);
+          row.appendChild(actions);
+
+          list.appendChild(row);
+        }
+
+        details.appendChild(summary);
+        details.appendChild(list);
+
+        $groups.appendChild(details);
+      }
+
+      updateStats();
+    }
+
+    // ================= Seed / Migration =================
+    function seedDefaults() {
+      if (data.groups.length) return;
+
+      data.groups = [
+        { id: "g1", name: "Carnes & Proteínas", order: 10, open: true },
+        { id: "g2", name: "Acompanhamentos", order: 20, open: true },
+        { id: "g3", name: "Temperos & Básicos", order: 30, open: false },
+        { id: "g4", name: "Bebidas", order: 40, open: false },
+        { id: "g5", name: "Descartáveis & Utilidades", order: 50, open: false },
+        { id: "g6", name: "Churrasqueira & Fogo", order: 60, open: false },
+        { id: "g7", name: "Conforto & Extras", order: 70, open: false },
+        { id: "g8", name: "Limpeza & Pós", order: 80, open: false }
+      ];
+
+      const defaults = [
+        ["Carvão", "g6"], ["Acendedor / isqueiro", "g6"], ["Sal grosso", "g3"], ["Gelo", "g4"], ["Água", "g4"],
+        ["Picanha / fraldinha", "g1"], ["Linguiça", "g1"], ["Pão de alho", "g1"], ["Queijo coalho", "g1"],
+        ["Arroz", "g2"], ["Farofa", "g2"], ["Vinagrete", "g2"],
+        ["Pratos e copos", "g5"], ["Guardanapo", "g5"], ["Sacos de lixo", "g8"]
+      ];
+
+      for (const [text, gid] of defaults) {
+        data.items.push({
+          id: uuid(),
+          text,
+          groupId: gid,
+          checked: false,
+          order: maxOrderInGroup(gid) + 10,
+          createdAt: Date.now()
+        });
+      }
+
+      // normaliza todos os grupos
+      for (const g of data.groups) normalizeOrders(g.id);
+      persist();
+    }
+
+    function migrateFromV1IfExists() {
+      // Se você usava o HTML anterior, ele salvava um cookie "bbq_checklist_v1" como array de itens sem grupo.
+      // Vamos tentar migrar pra "Temperos & Básicos" por padrão (ou outro) e manter a ordem.
+      const old = getCookie("bbq_checklist_v1");
+      if (!old) return false;
+
+      try {
+        const parsed = JSON.parse(old);
+        if (!Array.isArray(parsed) || !parsed.length) return false;
+
+        // cria estrutura v2 se vazia
+        seedDefaults();
+        // coloca tudo no grupo "Temperos & Básicos" (g3), preservando ordem por createdAt
+        const gid = "g3";
+        const startOrder = maxOrderInGroup(gid);
+
+        let k = 1;
+        for (const it of parsed) {
+          data.items.push({
+            id: uuid(),
+            text: String(it.text ?? it).trim() || "Item",
+            groupId: gid,
+            checked: !!it.checked,
+            order: startOrder + (k * 10),
+            createdAt: Date.now() + k
+          });
+          k++;
+        }
+        normalizeOrders(gid);
+        persist();
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function load() {
+      const raw = getCookie(COOKIE_NAME);
+      if (!raw) {
+        data = { groups: [], items: [] };
+        seedDefaults();
+        migrateFromV1IfExists(); // tenta migrar se existir
+        render();
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object" && Array.isArray(parsed.groups) && Array.isArray(parsed.items)) {
+          data = parsed;
+        } else {
+          data = { groups: [], items: [] };
+        }
+      } catch {
+        data = { groups: [], items: [] };
+      }
+
+      seedDefaults();
+
+      // garante order em todos os grupos
+      for (const g of data.groups) {
+        if (!Number.isFinite(g.order)) g.order = 10;
+        if (typeof g.open !== "boolean") g.open = true;
+      }
+      for (const g of data.groups) normalizeOrders(g.id);
+
+      render();
+    }
+
+    // ================= Events =================
+    $addBtn.addEventListener("click", () => addItem($newItem.value, $newGroup.value));
     $newItem.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") addItem($newItem.value);
+      if (e.key === "Enter") addItem($newItem.value, $newGroup.value);
     });
 
     $dlgCancel.addEventListener("click", () => { editingId = null; $editDialog.close(); });
     $dlgSave.addEventListener("click", saveEdit);
+    $dlgDelete.addEventListener("click", () => {
+      if (!editingId) return;
+      if (confirm("Excluir este item?")) {
+        const id = editingId;
+        editingId = null;
+        $editDialog.close();
+        removeItem(id);
+      }
+    });
     $editInput.addEventListener("keydown", (e) => { if (e.key === "Enter") saveEdit(); });
 
     $clearCheckedBtn.addEventListener("click", () => {
-      const done = items.filter(i => i.checked).length;
+      const done = data.items.filter(i => i.checked).length;
       if (!done) return;
       if (confirm(`Excluir ${done} item(ns) marcado(s)?`)) clearChecked();
     });

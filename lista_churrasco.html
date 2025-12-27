@@ -3,22 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Checklist do Churrasco (grupos + subgrupos + import/export)</title>
+  <title>Checklist (grupos + subgrupos + import/export)</title>
   <style>
     :root { color-scheme: light dark; }
     body { margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:#0b0c10; color:#e9eef6; }
-    .app { max-width: 900px; margin: 0 auto; padding: 16px 14px 32px; }
+    .app { max-width: 900px; margin: 0 auto; padding: 14px 12px 28px; }
 
-    header {
+    header{
       position: sticky; top: 0; z-index: 10;
       background: linear-gradient(#0b0c10 70%, rgba(11,12,16,0));
-      padding: 10px 0 12px;
+      padding: 10px 0 10px;
       backdrop-filter: blur(6px);
     }
-    h1 { margin: 6px 0 10px; font-size: 20px; font-weight: 900; letter-spacing: .2px; }
-    .muted { color:#aab6c7; font-size:12px; line-height:1.35; }
-    .row { display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
-    input[type="text"], select, textarea {
+    h1{ margin: 4px 0 8px; font-size: 20px; font-weight: 900; }
+    .muted{ color:#aab6c7; font-size:12px; line-height:1.35; }
+
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    input[type="text"], select, textarea{
       padding: 12px 12px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,.10);
@@ -28,8 +29,8 @@
       font-size: 16px;
     }
     input[type="text"]{ flex:1; min-width: 180px; }
-    select { font-size: 14px; }
-    button {
+    select{ font-size: 14px; }
+    button{
       padding: 12px 14px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,.12);
@@ -40,8 +41,19 @@
       cursor: pointer;
       touch-action: manipulation;
     }
-    button:active { transform: scale(.98); }
-    .pill {
+    button:active{ transform: scale(.98); }
+
+    .iconBtn{
+      padding: 10px 10px;
+      min-width: 44px;
+      border-radius: 12px;
+      display:inline-flex; align-items:center; justify-content:center;
+      font-size: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.08);
+    }
+
+    .pill{
       display:inline-flex; gap:8px; align-items:center;
       padding: 8px 10px; border-radius: 999px;
       border: 1px solid rgba(255,255,255,.10);
@@ -49,100 +61,75 @@
       font-size: 12px; color:#cfe1ff;
     }
 
-    .groups { margin-top: 14px; display:flex; flex-direction: column; gap: 14px; }
-    details {
+    .groups{ margin-top: 12px; display:flex; flex-direction: column; gap: 14px; }
+    details{
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.05);
       border-radius: 18px;
       overflow: clip;
     }
-    summary {
-      list-style: none;
-      cursor: pointer;
+    summary{
+      list-style:none; cursor:pointer;
       padding: 12px 12px;
       display:flex; align-items:center; justify-content: space-between; gap:10px;
-      user-select: none;
+      user-select:none;
     }
-    summary::-webkit-details-marker { display:none; }
-    .gTitle { font-weight: 900; font-size: 15px; }
-    .gMeta { display:flex; gap:10px; align-items:center; }
-    .gCount { font-size: 12px; color:#aab6c7; }
+    summary::-webkit-details-marker{ display:none; }
+    .gTitle{ font-weight: 900; font-size: 15px; }
+    .gMeta{ font-size: 12px; color:#aab6c7; }
 
-    .subgroupBox { padding: 8px 10px 12px; display:flex; flex-direction: column; gap: 12px; }
-    .sgHeader {
+    .subgroupBox{ padding: 8px 10px 12px; display:flex; flex-direction: column; gap: 12px; }
+    .sgHeader{
       display:flex; align-items:center; justify-content: space-between; gap:10px;
       padding: 10px 10px;
       border-radius: 14px;
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.05);
     }
-    .sgName { font-weight: 900; font-size: 13px; }
-    .sgMeta { font-size: 12px; color:#aab6c7; }
-    .list { margin-top: 8px; display:flex; flex-direction: column; gap: 10px; }
+    .sgName{ font-weight: 900; font-size: 13px; }
+    .sgMeta{ font-size: 12px; color:#aab6c7; }
 
-    .item {
+    .list{ margin-top: 8px; display:flex; flex-direction: column; gap: 10px; }
+    .item{
       display:flex; gap:10px; align-items:center;
       padding: 12px 12px;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.06);
     }
-    .item.checked { opacity:.78; }
-    .item .text { flex:1; font-size:16px; line-height:1.2; word-break: break-word; }
-    .item.checked .text { text-decoration: line-through; color:#b7c1d1; }
-    .actions { display:flex; gap:8px; align-items:center; }
+    .item.checked{ opacity:.78; }
+    .item .text{ flex:1; font-size:16px; line-height:1.2; word-break: break-word; }
+    .item.checked .text{ text-decoration: line-through; color:#b7c1d1; }
 
-    .iconBtn {
-      padding: 10px 10px;
-      border-radius: 12px;
-      min-width: 42px;
-      display:inline-flex; align-items:center; justify-content:center;
-      font-size: 16px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.08);
-    }
-    .moveBtn { font-size: 14px; min-width: 40px; padding: 10px 8px; }
-    .danger { border-color: rgba(255,80,80,.35); background: rgba(255,80,80,.12); }
+    .chk{ width: 24px; height: 24px; accent-color:#6ea8fe; transform: translateY(1px); cursor:pointer; }
 
-    .chk { width: 24px; height: 24px; accent-color:#6ea8fe; transform: translateY(1px); cursor:pointer; }
-
-    .footer {
-      margin-top: 14px;
-      display:flex; justify-content: space-between; align-items:center;
-      gap:10px; flex-wrap: wrap;
-    }
-
-    dialog {
-      width: min(720px, calc(100% - 24px));
+    dialog{
+      width: min(760px, calc(100% - 24px));
       border: 1px solid rgba(255,255,255,.14);
       border-radius: 16px;
       padding: 14px;
-      background: #0f1118;
+      background:#0f1118;
       color:#e9eef6;
     }
-    dialog::backdrop { background: rgba(0,0,0,.55); }
-    .dlgTitle { font-weight: 900; margin: 2px 0 10px; }
-    .dlgBtns { display:flex; justify-content:flex-end; gap:10px; margin-top: 12px; flex-wrap: wrap; }
-    .dlgRow { display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
-    .dlgRow label { font-size: 12px; color:#aab6c7; width:100%; }
-    .small { font-size: 12px; color:#aab6c7; }
-
-    textarea { width: 100%; min-height: 220px; resize: vertical; font-size: 14px; line-height: 1.35; }
-    code.kbd { padding: 2px 6px; border-radius: 8px; background: rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10); }
+    dialog::backdrop{ background: rgba(0,0,0,.55); }
+    .dlgTitle{ font-weight: 900; margin: 2px 0 10px; }
+    .dlgBtns{ display:flex; justify-content:flex-end; gap:10px; margin-top: 12px; flex-wrap:wrap; }
+    .dlgRow{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .dlgRow label{ font-size: 12px; color:#aab6c7; width:100%; }
+    .danger{ border-color: rgba(255,80,80,.35); background: rgba(255,80,80,.12); }
+    textarea{ width: 100%; min-height: 220px; resize: vertical; font-size: 14px; line-height: 1.35; }
   </style>
 </head>
 
 <body>
   <div class="app">
     <header>
-      <h1>Checklist do Churrasco</h1>
+      <h1>Checklist</h1>
       <div class="muted">
-        ✅ Salva em <b>cookies</b>. <b>Marcou</b>? vai pro <b>final do subgrupo</b>. <br/>
-        ↕️ Mudar ordem manual: <b>↑ / ↓</b> no item (dentro do mesmo status). <br/>
-        📄 Import/Export: texto com indentação:
-        <br/>- Grupo: sem espaços
-        <br/>- Subgrupo: <code class="kbd">␠␠</code> (dois espaços)
-        <br/>- Item: <code class="kbd">␠␠␠␠</code> (quatro espaços) com <code class="kbd">- [ ]</code> ou <code class="kbd">- [x]</code>
+        ✅ Salva em <b>cookies</b>. Marcou? vai pro <b>final do subgrupo</b>.<br/>
+        📄 Export/Import (texto):
+        Grupo (sem espaços), Subgrupo (2 espaços), Item (4 espaços).<br/>
+        Itens <b>marcados</b> são linhas que começam com <b>.</b> (ponto). Ex.: <code>. carvão</code>
       </div>
 
       <div style="height:10px"></div>
@@ -158,19 +145,26 @@
         <span class="pill" id="statsPill">0 itens</span>
         <span class="muted" id="saveStatus"></span>
         <span style="flex:1"></span>
-        <button id="manageBtn">Grupos</button>
-        <button id="exportBtn">Exportar</button>
-        <button id="importBtn">Importar</button>
+        <button class="iconBtn" id="menuBtn" title="Menu">⋯</button>
       </div>
     </header>
 
     <main class="groups" id="groups"></main>
-
-    <div class="footer">
-      <span class="muted">Dica: toque no texto ou ✏️ para editar (inclui trocar grupo/subgrupo).</span>
-      <button class="danger" id="clearCheckedBtn" title="Remove apenas os itens marcados">Excluir marcados</button>
-    </div>
   </div>
+
+  <!-- MENU (colapsado) -->
+  <dialog id="menuDialog">
+    <div class="dlgTitle">Menu</div>
+    <div class="dlgRow">
+      <button id="manageBtn" style="flex:1">Gerenciar grupos</button>
+      <button id="exportBtn" style="flex:1">Exportar</button>
+      <button id="importBtn" style="flex:1">Importar</button>
+      <button class="danger" id="clearCheckedBtn" style="flex:1">Excluir marcados</button>
+    </div>
+    <div class="dlgBtns">
+      <button id="closeMenu">Fechar</button>
+    </div>
+  </dialog>
 
   <!-- Edit item -->
   <dialog id="editDialog">
@@ -206,9 +200,19 @@
       <button class="danger" id="dlgDelete">Excluir</button>
       <button id="dlgSave">Salvar</button>
     </div>
+  </dialog>
 
-    <div class="small" style="margin-top:10px;">
-      Se marcar, o item vai pro final do subgrupo.
+  <!-- Ações do item (colapsadas) -->
+  <dialog id="itemMenuDialog">
+    <div class="dlgTitle">Item</div>
+    <div class="dlgRow">
+      <button id="itemUp" style="flex:1">↑ Subir</button>
+      <button id="itemDown" style="flex:1">↓ Descer</button>
+      <button id="itemEdit" style="flex:1">Editar</button>
+      <button class="danger" id="itemDelete" style="flex:1">Excluir</button>
+    </div>
+    <div class="dlgBtns">
+      <button id="itemClose">Fechar</button>
     </div>
   </dialog>
 
@@ -229,15 +233,18 @@
       <button id="manageClose">Fechar</button>
     </div>
 
-    <div class="small">
-      Ao excluir um grupo, todos os subgrupos e itens dele são removidos.
+    <div class="muted" style="margin-top:8px">
+      Ao excluir um grupo, todos os subgrupos e itens dele são removidos.<br/>
+      Ao excluir um subgrupo, os itens vão para <b>Geral</b>.
     </div>
   </dialog>
 
   <!-- Export -->
   <dialog id="exportDialog">
     <div class="dlgTitle">Exportar (texto)</div>
-    <div class="small" style="margin-bottom:8px;">Copie e salve como <b>.txt</b> (ou use “Baixar”).</div>
+    <div class="muted" style="margin-bottom:8px;">
+      Itens marcados começam com <b>.</b> (ponto). Copie ou baixe como <b>.txt</b>.
+    </div>
     <textarea id="exportText" readonly></textarea>
     <div class="dlgBtns">
       <button id="copyExport">Copiar</button>
@@ -249,10 +256,11 @@
   <!-- Import -->
   <dialog id="importDialog">
     <div class="dlgTitle">Importar (texto)</div>
-    <div class="small" style="margin-bottom:8px;">
-      Cola o texto aqui. A importação <b>substitui</b> sua lista atual (com confirmação).
+    <div class="muted" style="margin-bottom:8px;">
+      A importação <b>substitui</b> sua lista atual (com confirmação).<br/>
+      Itens marcados: linha do item começando com <b>.</b>
     </div>
-    <textarea id="importText" placeholder="Cole aqui o texto exportado..."></textarea>
+    <textarea id="importText" placeholder="Cole aqui o texto..."></textarea>
     <div class="dlgBtns">
       <button id="closeImport">Cancelar</button>
       <button class="danger" id="doImport">Importar</button>
@@ -261,7 +269,7 @@
 
   <script>
     // ================= Cookies =================
-    const COOKIE_NAME = "bbq_checklist_groups_v3";
+    const COOKIE_NAME = "bbq_checklist_groups_v4";
     const COOKIE_DAYS = 365;
 
     function setCookie(name, value, days) {
@@ -281,10 +289,7 @@
     }
 
     // ================= State =================
-    // v3: data = { groups:[], subgroups:[], items:[] }
-    // group: {id,name,order,open}
-    // subgroup: {id,groupId,name,order}
-    // item: {id,text,groupId,subgroupId,checked,order,createdAt}
+    // v4: data = { groups:[], subgroups:[], items:[] }
     let data = { groups: [], subgroups: [], items: [] };
 
     // ================= DOM =================
@@ -295,6 +300,13 @@
     const $addBtn = document.getElementById("addBtn");
     const $statsPill = document.getElementById("statsPill");
     const $saveStatus = document.getElementById("saveStatus");
+
+    const $menuBtn = document.getElementById("menuBtn");
+    const $menuDialog = document.getElementById("menuDialog");
+    const $closeMenu = document.getElementById("closeMenu");
+    const $manageBtn = document.getElementById("manageBtn");
+    const $exportBtn = document.getElementById("exportBtn");
+    const $importBtn = document.getElementById("importBtn");
     const $clearCheckedBtn = document.getElementById("clearCheckedBtn");
 
     const $editDialog = document.getElementById("editDialog");
@@ -306,15 +318,20 @@
     const $dlgSave = document.getElementById("dlgSave");
     const $dlgDelete = document.getElementById("dlgDelete");
 
-    const $manageBtn = document.getElementById("manageBtn");
+    const $itemMenuDialog = document.getElementById("itemMenuDialog");
+    const $itemUp = document.getElementById("itemUp");
+    const $itemDown = document.getElementById("itemDown");
+    const $itemEdit = document.getElementById("itemEdit");
+    const $itemDelete = document.getElementById("itemDelete");
+    const $itemClose = document.getElementById("itemClose");
+    let currentItemMenuId = null;
+
     const $manageDialog = document.getElementById("manageDialog");
     const $manageList = document.getElementById("manageList");
     const $newGroupName = document.getElementById("newGroupName");
     const $addGroupBtn = document.getElementById("addGroupBtn");
     const $manageClose = document.getElementById("manageClose");
 
-    const $exportBtn = document.getElementById("exportBtn");
-    const $importBtn = document.getElementById("importBtn");
     const $exportDialog = document.getElementById("exportDialog");
     const $exportText = document.getElementById("exportText");
     const $copyExport = document.getElementById("copyExport");
@@ -336,8 +353,8 @@
       try {
         setCookie(COOKIE_NAME, JSON.stringify(data), COOKIE_DAYS);
         $saveStatus.textContent = "salvo";
-        setTimeout(() => ($saveStatus.textContent = ""), 900);
-      } catch (e) {
+        setTimeout(() => ($saveStatus.textContent = ""), 800);
+      } catch {
         $saveStatus.textContent = "erro ao salvar";
       }
     }
@@ -350,7 +367,6 @@
         .sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
     }
 
-    function getGroup(id) { return data.groups.find(g => g.id === id); }
     function getSubgroup(id) { return data.subgroups.find(sg => sg.id === id); }
 
     function ensureDefaultSubgroup(groupId) {
@@ -377,7 +393,6 @@
       const b = inSg.filter(i => i.checked).sort((x,y) => (x.order ?? 0) - (y.order ?? 0));
       return [...a, ...b];
     }
-
     function normalizeItemOrders(subgroupId) {
       const list = itemsInSubgroup(subgroupId);
       list.forEach((it, idx) => it.order = (idx + 1) * 10);
@@ -399,7 +414,6 @@
       selectEl.innerHTML = "";
       const subs = sortSubgroups(groupId);
       if (!subs.length) ensureDefaultSubgroup(groupId);
-
       const subs2 = sortSubgroups(groupId);
       for (const sg of subs2) {
         const opt = document.createElement("option");
@@ -416,11 +430,10 @@
       $statsPill.textContent = `${done}/${total} marcados`;
     }
 
-    // ================= Actions: items =================
+    // ================= Items =================
     function addItem(text, groupId, subgroupId) {
       const t = (text || "").trim();
       if (!t) return;
-
       const gid = groupId || data.groups[0]?.id;
       const sgid = subgroupId || ensureDefaultSubgroup(gid);
 
@@ -452,8 +465,7 @@
       const it = data.items.find(i => i.id === id);
       if (!it) return;
       it.checked = !!checked;
-      // vai pro fim do subgrupo
-      it.order = maxItemOrder(it.subgroupId) + 10;
+      it.order = maxItemOrder(it.subgroupId) + 10; // vai pro fim do subgrupo
       normalizeItemOrders(it.subgroupId);
       persist();
       render();
@@ -465,15 +477,11 @@
 
       const list = itemsInSubgroup(it.subgroupId);
       const idx = list.findIndex(x => x.id === id);
-      if (idx < 0) return;
-
       const targetIdx = idx + direction;
-      if (targetIdx < 0 || targetIdx >= list.length) return;
+      if (idx < 0 || targetIdx < 0 || targetIdx >= list.length) return;
 
       const other = list[targetIdx];
-
-      // Só deixa mover dentro do mesmo status (marcado com marcado / desmarcado com desmarcado)
-      if (it.checked !== other.checked) return;
+      if (it.checked !== other.checked) return; // só move dentro do mesmo status
 
       const tmp = it.order;
       it.order = other.order;
@@ -510,14 +518,13 @@
       const oldG = it.groupId;
 
       const newG = $editGroup.value;
-      fillSubgroupSelect($editSubgroup, newG, $editSubgroup.value); // garante options
+      fillSubgroupSelect($editSubgroup, newG, $editSubgroup.value);
       const newSg = $editSubgroup.value || ensureDefaultSubgroup(newG);
 
       const newChecked = ($editChecked.value === "1");
 
       it.text = newText;
 
-      // mudou de grupo/subgrupo
       if (newG !== oldG || newSg !== oldSg) {
         it.groupId = newG;
         it.subgroupId = newSg;
@@ -526,7 +533,6 @@
         normalizeItemOrders(newSg);
       }
 
-      // mudou checked
       if (newChecked !== it.checked) {
         it.checked = newChecked;
         it.order = maxItemOrder(it.subgroupId) + 10;
@@ -539,13 +545,19 @@
       render();
     }
 
+    // ================= Item Menu (colapsado) =================
+    function openItemMenu(id) {
+      currentItemMenuId = id;
+      $itemMenuDialog.showModal();
+    }
+
     // ================= Groups management =================
     function addGroup(name) {
       const n = (name || "").trim();
       if (!n) return;
+
       const id = uuid();
       const ord = data.groups.length ? Math.max(...data.groups.map(g => g.order ?? 0)) + 10 : 10;
-
       data.groups.push({ id, name: n, order: ord, open: true });
       ensureDefaultSubgroup(id);
 
@@ -554,12 +566,10 @@
     }
 
     function deleteGroup(groupId) {
-      // remove items, subgroups, group
       data.items = data.items.filter(i => i.groupId !== groupId);
       data.subgroups = data.subgroups.filter(sg => sg.groupId !== groupId);
       data.groups = data.groups.filter(g => g.id !== groupId);
 
-      // se ficou vazio, re-seed mínimo
       if (!data.groups.length) seedDefaults();
 
       persist();
@@ -578,12 +588,12 @@
     function deleteSubgroup(subgroupId) {
       const sg = getSubgroup(subgroupId);
       if (!sg) return;
-      // move itens para "Geral" do grupo
+
       const defaultSg = ensureDefaultSubgroup(sg.groupId);
       for (const it of data.items.filter(i => i.subgroupId === subgroupId)) {
         it.subgroupId = defaultSg;
-        it.order = maxItemOrder(defaultSg) + 10;
         it.groupId = sg.groupId;
+        it.order = maxItemOrder(defaultSg) + 10;
       }
       normalizeItemOrders(defaultSg);
 
@@ -604,8 +614,8 @@
         box.style.borderRadius = "14px";
         box.style.background = "rgba(255,255,255,.04)";
 
-        const header = document.createElement("div");
-        header.className = "row";
+        const head = document.createElement("div");
+        head.className = "row";
 
         const title = document.createElement("div");
         title.style.fontWeight = "900";
@@ -621,8 +631,8 @@
           renderManageDialog();
         });
 
-        header.appendChild(title);
-        header.appendChild(del);
+        head.appendChild(title);
+        head.appendChild(del);
 
         const sgRow = document.createElement("div");
         sgRow.className = "row";
@@ -646,8 +656,8 @@
 
         const sgList = document.createElement("div");
         sgList.style.marginTop = "10px";
-        const subs = sortSubgroups(g.id);
 
+        const subs = sortSubgroups(g.id);
         for (const sg of subs) {
           const line = document.createElement("div");
           line.className = "row";
@@ -663,7 +673,7 @@
           const delSg = document.createElement("button");
           delSg.className = "danger";
           delSg.textContent = "Excluir";
-          delSg.disabled = (sg.name === "Geral"); // evita remover o default
+          delSg.disabled = (sg.name === "Geral");
           delSg.title = delSg.disabled ? 'Subgrupo "Geral" não pode ser excluído' : "Excluir subgrupo";
           delSg.addEventListener("click", () => {
             if (confirm(`Excluir subgrupo "${sg.name}"?\nItens dele vão para "Geral".`)) deleteSubgroup(sg.id);
@@ -675,15 +685,16 @@
           sgList.appendChild(line);
         }
 
-        box.appendChild(header);
+        box.appendChild(head);
         box.appendChild(sgRow);
         box.appendChild(sgList);
-
         $manageList.appendChild(box);
       }
     }
 
     // ================= Export / Import =================
+    // Requisito: itens marcados identificados APENAS por "." no início da linha do item.
+    // Unchecked: usamos "- " (sem colchetes) só pra ficar legível.
     function exportAsText() {
       sortGroups();
       let out = [];
@@ -696,12 +707,11 @@
 
           const list = itemsInSubgroup(sg.id);
           for (const it of list) {
-            const mark = it.checked ? "x" : " ";
-            out.push(`    - [${mark}] ${it.text}`);
+            const prefix = it.checked ? ". " : "- ";
+            out.push("    " + prefix + it.text);
           }
         }
-
-        out.push(""); // linha em branco entre grupos
+        out.push("");
       }
       return out.join("\n").trimEnd() + "\n";
     }
@@ -711,7 +721,7 @@
       const nd = { groups: [], subgroups: [], items: [] };
 
       const groupByName = new Map();
-      const subgroupByKey = new Map(); // key = groupId + "::" + name
+      const subgroupByKey = new Map(); // groupId::name
 
       function addG(name) {
         const n = name.trim();
@@ -722,13 +732,17 @@
         groupByName.set(n, g);
         return g;
       }
-
       function addSG(groupId, name) {
         const n = name.trim();
         if (!n) return null;
         const key = groupId + "::" + n;
         if (subgroupByKey.has(key)) return subgroupByKey.get(key);
-        const sg = { id: uuid(), groupId, name: n, order: (nd.subgroups.filter(x => x.groupId === groupId).length + 1) * 10 };
+        const sg = {
+          id: uuid(),
+          groupId,
+          name: n,
+          order: (nd.subgroups.filter(x => x.groupId === groupId).length + 1) * 10
+        };
         nd.subgroups.push(sg);
         subgroupByKey.set(key, sg);
         return sg;
@@ -737,67 +751,52 @@
       let curG = null;
       let curSG = null;
 
-      // fallback
-      function ensureFallbackGroup() {
+      function ensureFallback() {
         if (!curG) curG = addG("Sem grupo");
         if (!curSG) curSG = addSG(curG.id, "Geral");
       }
 
       for (const raw of lines) {
-        const line = raw.replace(/\t/g, "  "); // tabs -> 2 spaces
+        const line = raw.replace(/\t/g, "  ");
         const trimmed = line.trim();
         if (!trimmed) continue;
         if (trimmed.startsWith("#")) continue;
 
-        const leading = line.match(/^ */)?.[0]?.length ?? 0;
+        const leading = (line.match(/^ */)?.[0]?.length ?? 0);
 
         if (leading < 2) {
-          // Group
           curG = addG(trimmed);
-          curSG = addSG(curG.id, "Geral"); // garante
+          curSG = addSG(curG.id, "Geral");
           continue;
         }
 
         if (leading >= 2 && leading < 4) {
-          // Subgroup (2 spaces)
           if (!curG) curG = addG("Sem grupo");
           curSG = addSG(curG.id, trimmed);
           continue;
         }
 
-        // Item (4+ spaces)
-        ensureFallbackGroup();
+        // Item (4+)
+        ensureFallback();
 
-        // aceita:
-        // - [x] item
-        // - [ ] item
-        // [x] item
-        // item
         let t = trimmed;
         let checked = false;
 
-        const m1 = t.match(/^-?\s*\[\s*([xX])\s*\]\s*(.+)$/);
-        const m2 = t.match(/^-?\s*\[\s*([ ])\s*\]\s*(.+)$/);
-        const m3 = t.match(/^-?\s*-\s*\[\s*([xX ])\s*\]\s*(.+)$/);
-
-        if (m3) {
-          checked = (m3[1].toLowerCase() === "x");
-          t = m3[2];
-        } else if (m1) {
-          checked = true; t = m1[2];
-        } else if (m2) {
-          checked = false; t = m2[2];
+        // marcado: começa com "."
+        if (t.startsWith(".")) {
+          checked = true;
+          t = t.replace(/^\.\s*/, "");
         } else {
-          // remove um "-" inicial se tiver
+          // não marcado: aceita "- item" ou "item"
           t = t.replace(/^-+\s*/, "");
         }
 
         t = (t || "").trim();
         if (!t) continue;
 
-        // cria item
         const sgid = curSG?.id || addSG(curG.id, "Geral").id;
         const order = (nd.items.filter(i => i.subgroupId === sgid).length + 1) * 10;
+
         nd.items.push({
           id: uuid(),
           text: t,
@@ -809,16 +808,14 @@
         });
       }
 
-      // se nada criado
       if (!nd.groups.length) return null;
 
-      // normaliza: garante "Geral" em todos os grupos
+      // garante "Geral" em todo grupo
       for (const g of nd.groups) {
         const hasGeral = nd.subgroups.some(sg => sg.groupId === g.id && sg.name === "Geral");
         if (!hasGeral) nd.subgroups.push({ id: uuid(), groupId: g.id, name: "Geral", order: 10 });
       }
 
-      // regra visual: não-marcados antes; mas na import a ordem já vem, então ok.
       return nd;
     }
 
@@ -865,10 +862,7 @@
 
         const right = document.createElement("div");
         right.className = "gMeta";
-        const cnt = document.createElement("div");
-        cnt.className = "gCount";
-        cnt.textContent = `${done}/${total} marcados`;
-        right.appendChild(cnt);
+        right.textContent = `${done}/${total} marcados`;
 
         summary.appendChild(left);
         summary.appendChild(right);
@@ -882,14 +876,13 @@
         for (const sg of subs2) {
           const sgItems = itemsInSubgroup(sg.id);
           const sgDone = sgItems.filter(i => i.checked).length;
-          const sgTotal = sgItems.length;
 
           const sgWrap = document.createElement("div");
 
           const sgHeader = document.createElement("div");
           sgHeader.className = "sgHeader";
           const sgL = document.createElement("div");
-          sgL.innerHTML = `<div class="sgName">${sg.name}</div><div class="sgMeta">${sgDone}/${sgTotal} marcados</div>`;
+          sgL.innerHTML = `<div class="sgName">${sg.name}</div><div class="sgMeta">${sgDone}/${sgItems.length} marcados</div>`;
           sgHeader.appendChild(sgL);
 
           sgWrap.appendChild(sgHeader);
@@ -921,41 +914,15 @@
             text.title = "Toque para editar";
             text.addEventListener("click", () => openEdit(it.id));
 
-            const actions = document.createElement("div");
-            actions.className = "actions";
-
-            const upBtn = document.createElement("button");
-            upBtn.className = "iconBtn moveBtn";
-            upBtn.textContent = "↑";
-            upBtn.title = "Subir";
-            upBtn.addEventListener("click", () => moveItemWithinSubgroup(it.id, -1));
-
-            const downBtn = document.createElement("button");
-            downBtn.className = "iconBtn moveBtn";
-            downBtn.textContent = "↓";
-            downBtn.title = "Descer";
-            downBtn.addEventListener("click", () => moveItemWithinSubgroup(it.id, +1));
-
-            const editBtn = document.createElement("button");
-            editBtn.className = "iconBtn";
-            editBtn.textContent = "✏️";
-            editBtn.title = "Editar";
-            editBtn.addEventListener("click", () => openEdit(it.id));
-
-            const delBtn = document.createElement("button");
-            delBtn.className = "iconBtn danger";
-            delBtn.textContent = "🗑️";
-            delBtn.title = "Excluir";
-            delBtn.addEventListener("click", () => removeItem(it.id));
-
-            actions.appendChild(upBtn);
-            actions.appendChild(downBtn);
-            actions.appendChild(editBtn);
-            actions.appendChild(delBtn);
+            const more = document.createElement("button");
+            more.className = "iconBtn";
+            more.textContent = "⋯";
+            more.title = "Ações";
+            more.addEventListener("click", () => openItemMenu(it.id));
 
             row.appendChild(chk);
             row.appendChild(text);
-            row.appendChild(actions);
+            row.appendChild(more);
 
             list.appendChild(row);
           }
@@ -966,7 +933,6 @@
 
         details.appendChild(summary);
         details.appendChild(box);
-
         $groups.appendChild(details);
       }
 
@@ -975,7 +941,6 @@
 
     // ================= Seed / Load =================
     function seedDefaults() {
-      // mínimo
       data.groups = [
         { id: "g1", name: "Carnes & Proteínas", order: 10, open: true },
         { id: "g2", name: "Acompanhamentos", order: 20, open: true },
@@ -987,11 +952,8 @@
         { id: "g8", name: "Limpeza & Pós", order: 80, open: false }
       ];
 
-      // subgrupos (exemplo)
       data.subgroups = [];
-      for (const g of data.groups) {
-        data.subgroups.push({ id: uuid(), groupId: g.id, name: "Geral", order: 10 });
-      }
+      for (const g of data.groups) data.subgroups.push({ id: uuid(), groupId: g.id, name: "Geral", order: 10 });
 
       function sgId(groupName) {
         const g = data.groups.find(x => x.name === groupName);
@@ -1030,52 +992,16 @@
           createdAt: Date.now()
         });
       }
-      // normaliza
       for (const sg of data.subgroups) normalizeItemOrders(sg.id);
 
       persist();
-    }
-
-    function tryMigrateOld() {
-      // migra v2 se existir
-      const old = getCookie("bbq_checklist_groups_v2");
-      if (!old) return false;
-      try {
-        const parsed = JSON.parse(old);
-        if (!parsed || !Array.isArray(parsed.groups) || !Array.isArray(parsed.items)) return false;
-
-        data.groups = parsed.groups.map(g => ({ id: g.id, name: g.name, order: g.order ?? 10, open: (typeof g.open === "boolean") ? g.open : true }));
-        data.subgroups = [];
-        // cada grupo ganha "Geral"
-        const sgMap = new Map();
-        for (const g of data.groups) {
-          const sg = { id: uuid(), groupId: g.id, name: "Geral", order: 10 };
-          data.subgroups.push(sg);
-          sgMap.set(g.id, sg.id);
-        }
-        data.items = parsed.items.map(it => ({
-          id: it.id ?? uuid(),
-          text: String(it.text ?? "Item"),
-          groupId: it.groupId,
-          subgroupId: sgMap.get(it.groupId) || ensureDefaultSubgroup(it.groupId),
-          checked: !!it.checked,
-          order: it.order ?? 10,
-          createdAt: it.createdAt ?? Date.now()
-        }));
-
-        // normaliza por subgrupo
-        for (const sg of data.subgroups) normalizeItemOrders(sg.id);
-
-        persist();
-        return true;
-      } catch { return false; }
     }
 
     function load() {
       const raw = getCookie(COOKIE_NAME);
       if (!raw) {
         data = { groups: [], subgroups: [], items: [] };
-        if (!tryMigrateOld()) seedDefaults();
+        seedDefaults();
         render();
         return;
       }
@@ -1095,16 +1021,14 @@
 
       if (!data.groups.length) seedDefaults();
 
-      // garante Geral em todos
       for (const g of data.groups) ensureDefaultSubgroup(g.id);
-
-      // normaliza items
       for (const sg of data.subgroups) normalizeItemOrders(sg.id);
 
       render();
     }
 
     // ================= Events =================
+    // Selects
     $newGroup.addEventListener("change", () => {
       const gid = $newGroup.value;
       const sgid = ensureDefaultSubgroup(gid);
@@ -1114,6 +1038,44 @@
     $addBtn.addEventListener("click", () => addItem($newItem.value, $newGroup.value, $newSubgroup.value));
     $newItem.addEventListener("keydown", (e) => { if (e.key === "Enter") addItem($newItem.value, $newGroup.value, $newSubgroup.value); });
 
+    // Menu
+    $menuBtn.addEventListener("click", () => $menuDialog.showModal());
+    $closeMenu.addEventListener("click", () => $menuDialog.close());
+
+    $manageBtn.addEventListener("click", () => {
+      $menuDialog.close();
+      renderManageDialog();
+      $manageDialog.showModal();
+      setTimeout(() => $newGroupName.focus(), 50);
+    });
+
+    $exportBtn.addEventListener("click", () => {
+      $menuDialog.close();
+      $exportText.value = exportAsText();
+      $exportDialog.showModal();
+    });
+
+    $importBtn.addEventListener("click", () => {
+      $menuDialog.close();
+      $importText.value = "";
+      $importDialog.showModal();
+      setTimeout(() => $importText.focus(), 50);
+    });
+
+    $clearCheckedBtn.addEventListener("click", () => {
+      const done = data.items.filter(i => i.checked).length;
+      if (!done) { alert("Nenhum item marcado."); return; }
+      if (!confirm(`Excluir ${done} item(ns) marcado(s)?`)) return;
+
+      const affected = [...new Set(data.items.filter(i => i.checked).map(i => i.subgroupId))];
+      data.items = data.items.filter(i => !i.checked);
+      affected.forEach(normalizeItemOrders);
+      persist();
+      render();
+      $menuDialog.close();
+    });
+
+    // Edit dialog
     $dlgCancel.addEventListener("click", () => { editingId = null; $editDialog.close(); });
     $dlgSave.addEventListener("click", saveEdit);
     $dlgDelete.addEventListener("click", () => {
@@ -1126,72 +1088,62 @@
       }
     });
     $editInput.addEventListener("keydown", (e) => { if (e.key === "Enter") saveEdit(); });
-
     $editGroup.addEventListener("change", () => {
       const gid = $editGroup.value;
       const sgid = ensureDefaultSubgroup(gid);
       fillSubgroupSelect($editSubgroup, gid, sgid);
     });
 
-    $clearCheckedBtn.addEventListener("click", () => {
-      const done = data.items.filter(i => i.checked).length;
-      if (!done) return;
-      if (!confirm(`Excluir ${done} item(ns) marcado(s)?`)) return;
-
-      const affected = [...new Set(data.items.filter(i => i.checked).map(i => i.subgroupId))];
-      data.items = data.items.filter(i => !i.checked);
-      affected.forEach(normalizeItemOrders);
-
-      persist();
-      render();
+    // Item menu
+    $itemClose.addEventListener("click", () => { currentItemMenuId = null; $itemMenuDialog.close(); });
+    $itemUp.addEventListener("click", () => { if (currentItemMenuId) moveItemWithinSubgroup(currentItemMenuId, -1); });
+    $itemDown.addEventListener("click", () => { if (currentItemMenuId) moveItemWithinSubgroup(currentItemMenuId, +1); });
+    $itemEdit.addEventListener("click", () => {
+      const id = currentItemMenuId;
+      currentItemMenuId = null;
+      $itemMenuDialog.close();
+      if (id) openEdit(id);
+    });
+    $itemDelete.addEventListener("click", () => {
+      const id = currentItemMenuId;
+      if (!id) return;
+      if (confirm("Excluir este item?")) {
+        currentItemMenuId = null;
+        $itemMenuDialog.close();
+        removeItem(id);
+      }
     });
 
     // Manage dialog
-    $manageBtn.addEventListener("click", () => {
-      renderManageDialog();
-      $manageDialog.showModal();
-      setTimeout(() => $newGroupName.focus(), 50);
-    });
     $manageClose.addEventListener("click", () => $manageDialog.close());
     $addGroupBtn.addEventListener("click", () => {
       addGroup($newGroupName.value);
       $newGroupName.value = "";
       renderManageDialog();
     });
-    $newGroupName.addEventListener("keydown", (e) => { if (e.key === "Enter") { addGroup($newGroupName.value); $newGroupName.value=""; renderManageDialog(); } });
-
-    // Export / Import dialogs
-    $exportBtn.addEventListener("click", () => {
-      $exportText.value = exportAsText();
-      $exportDialog.showModal();
-    });
-    $closeExport.addEventListener("click", () => $exportDialog.close());
-    $copyExport.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText($exportText.value);
-        alert("Copiado!");
-      } catch {
-        $exportText.focus();
-        $exportText.select();
-        alert("Não deu para copiar automaticamente. Selecione e copie manualmente.");
+    $newGroupName.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        addGroup($newGroupName.value);
+        $newGroupName.value = "";
+        renderManageDialog();
       }
     });
-    $downloadExport.addEventListener("click", () => {
-      downloadText("checklist-churrasco.txt", $exportText.value || exportAsText());
-    });
 
-    $importBtn.addEventListener("click", () => {
-      $importText.value = "";
-      $importDialog.showModal();
-      setTimeout(() => $importText.focus(), 50);
+    // Export dialog
+    $closeExport.addEventListener("click", () => $exportDialog.close());
+    $copyExport.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText($exportText.value); alert("Copiado!"); }
+      catch { $exportText.focus(); $exportText.select(); alert("Selecione e copie manualmente."); }
     });
+    $downloadExport.addEventListener("click", () => downloadText("checklist.txt", $exportText.value || exportAsText()));
+
+    // Import dialog
     $closeImport.addEventListener("click", () => $importDialog.close());
     $doImport.addEventListener("click", () => {
       const parsed = parseImportText($importText.value);
       if (!parsed) { alert("Texto inválido (não encontrei nenhum grupo/itens)."); return; }
       if (!confirm("Isso vai SUBSTITUIR sua lista atual. Continuar?")) return;
       data = parsed;
-      // garante Geral e normaliza
       for (const g of data.groups) ensureDefaultSubgroup(g.id);
       for (const sg of data.subgroups) normalizeItemOrders(sg.id);
       persist();
